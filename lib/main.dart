@@ -6,6 +6,10 @@ import 'dart:async';
 var url = Uri.https(
     'api.hgbrasil.com', '/finance', {'?': 'format=json&key=910e6206'});
 
+     
+const _cor = Colors.blueAccent;
+const _fonte = 18.0;
+
 void main() async {
   print(await buscaDados());
   runApp(MaterialApp(
@@ -29,30 +33,40 @@ class _HomeState extends State<Home> {
   final realControl = TextEditingController();
   final dolarControl = TextEditingController();
   final euroControl = TextEditingController();
+  final libraControl = TextEditingController();
 
   double real = 0;
   double dolar = 0;
   double euro = 0;
+  double libra = 0;
 
-  var _cor = Colors.blueAccent;
-  var _fonte = 18.0;
 
   void _realChanged(String text) {
     double real = double.parse(text = text.isEmpty ? '0' : text);
     dolarControl.text = (real / dolar).toStringAsFixed(2);
     euroControl.text = (real / euro).toStringAsFixed(2);
+    libraControl.text = (real / libra).toStringAsFixed(2);
   }
 
   void _dolarChanged(String text) {
     double dolar = double.parse(text = text.isEmpty ? '0' : text);
     realControl.text = (dolar * this.dolar).toStringAsFixed(2);
     euroControl.text = (dolar * this.dolar / euro).toStringAsFixed(2);
+    libraControl.text = (dolar * this.dolar / libra).toStringAsFixed(2);
   }
 
   void _euroChanged(String text) {
     double euro = double.parse(text = text.isEmpty ? '0' : text);
     realControl.text = (euro * this.euro).toStringAsFixed(2);
     dolarControl.text = (euro * this.euro / dolar).toStringAsFixed(2);
+    libraControl.text = (euro * this.euro / libra).toStringAsFixed(2);
+  }
+
+  void _libraChanged(String text) {
+    double euro = double.parse(text = text.isEmpty ? '0' : text);
+    realControl.text = (libra * this.libra).toStringAsFixed(2);
+    dolarControl.text = (libra * this.libra / dolar).toStringAsFixed(2);
+    libraControl.text = (libra * this.libra).toStringAsFixed(2);
   }
 
   @override
@@ -97,7 +111,22 @@ class _HomeState extends State<Home> {
                             "Dollares", "U\$  ", dolarControl, _dolarChanged),
                         Divider(),
                         constroiCamposdeTexto(
-                            "Euro", "EUR€  ", euroControl, _euroChanged)
+                            "Euro", "EUR€  ", euroControl, _euroChanged),
+                        Divider(),
+                        constroiCamposdeTexto(
+                            "Libra", "£  ", libraControl, _libraChanged),
+                        TextButton(
+                          style: ButtonStyle(
+                            foregroundColor: MaterialStateProperty.all<Color>(_cor),
+                          ),
+                          onPressed: () { 
+                            _realChanged('0');
+                            _dolarChanged('0');
+                            _euroChanged('0');
+                            _libraChanged('0');
+                          },
+                          child: Text('Limpar Valores'),
+                        )
                       ],
                     ),
                   );
@@ -114,13 +143,13 @@ Widget constroiCamposdeTexto(String label, String prefix,
     controller: value,
     decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: Colors.amber),
+        labelStyle: TextStyle(color: _cor),
         border: OutlineInputBorder(),
         enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.amber, width: 0.0)),
+            borderSide: BorderSide(color: _cor, width: 0.0)),
         prefixText: prefix,
-        prefixStyle: TextStyle(color: Colors.amber, fontSize: 25)),
-    style: TextStyle(color: Colors.amber, fontSize: 25),
+        prefixStyle: TextStyle(color: _cor, fontSize: _fonte)),
+    style: TextStyle(color: _cor, fontSize: _fonte),
     onChanged: changed as void Function(String),
     keyboardType: TextInputType.number,
   );
