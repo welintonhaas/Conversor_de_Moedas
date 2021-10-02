@@ -6,12 +6,11 @@ import 'dart:async';
 var url = Uri.https(
     'api.hgbrasil.com', '/finance', {'?': 'format=json&key=910e6206'});
 
-     
 const _cor = Colors.blueAccent;
 const _fonte = 18.0;
 
 void main() async {
-  print(await buscaDados());
+  //print(await buscaDados());
   runApp(MaterialApp(
     home: Home(),
   ));
@@ -40,7 +39,6 @@ class _HomeState extends State<Home> {
   double euro = 0;
   double libra = 0;
 
-
   void _realChanged(String text) {
     double real = double.parse(text = text.isEmpty ? '0' : text);
     dolarControl.text = (real / dolar).toStringAsFixed(2);
@@ -63,16 +61,16 @@ class _HomeState extends State<Home> {
   }
 
   void _libraChanged(String text) {
-    double euro = double.parse(text = text.isEmpty ? '0' : text);
+    double libra = double.parse(text = text.isEmpty ? '0' : text);
     realControl.text = (libra * this.libra).toStringAsFixed(2);
     dolarControl.text = (libra * this.libra / dolar).toStringAsFixed(2);
-    libraControl.text = (libra * this.libra).toStringAsFixed(2);
+    euroControl.text = (libra * this.libra / euro).toStringAsFixed(2);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("\$ Conversor \$"),
         backgroundColor: _cor,
@@ -97,6 +95,7 @@ class _HomeState extends State<Home> {
                 } else {
                   dolar = snapshot.data!["results"]["currencies"]["USD"]["buy"];
                   euro = snapshot.data!["results"]["currencies"]["EUR"]["buy"];
+                  libra = snapshot.data!["results"]["currencies"]["GBP"]["buy"];
 
                   return SingleChildScrollView(
                     padding: EdgeInsets.all(10),
@@ -105,28 +104,36 @@ class _HomeState extends State<Home> {
                       children: [
                         Icon(Icons.monetization_on, size: 150, color: _cor),
                         constroiCamposdeTexto(
-                            "Reais", "R\$  ", realControl, _realChanged),
+                            "Real", "R\$  ", realControl, _realChanged),
                         Divider(),
                         constroiCamposdeTexto(
-                            "Dollares", "U\$  ", dolarControl, _dolarChanged),
+                            "Dólar", "U\$  ", dolarControl, _dolarChanged),
                         Divider(),
                         constroiCamposdeTexto(
-                            "Euro", "EUR€  ", euroControl, _euroChanged),
+                            "Euro", "€  ", euroControl, _euroChanged),
                         Divider(),
                         constroiCamposdeTexto(
                             "Libra", "£  ", libraControl, _libraChanged),
-                        TextButton(
-                          style: ButtonStyle(
-                            foregroundColor: MaterialStateProperty.all<Color>(_cor),
-                          ),
-                          onPressed: () { 
-                            _realChanged('0');
-                            _dolarChanged('0');
-                            _euroChanged('0');
-                            _libraChanged('0');
-                          },
-                          child: Text('Limpar Valores'),
-                        )
+                        Container(
+                            margin: EdgeInsets.only(top: 20, bottom: 20),
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                foregroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.white),
+                                backgroundColor:
+                                    MaterialStateProperty.all(_cor),
+                                padding: MaterialStateProperty.all<EdgeInsets>(
+                                    EdgeInsets.all(20)),
+                              ),
+                              onPressed: () {
+                                _realChanged('0');
+                                _dolarChanged('0');
+                                _euroChanged('0');
+                                _libraChanged('0');
+                              },
+                              child: Text('LIMPAR VALORES'),
+                            ))
                       ],
                     ),
                   );
@@ -145,8 +152,8 @@ Widget constroiCamposdeTexto(String label, String prefix,
         labelText: label,
         labelStyle: TextStyle(color: _cor),
         border: OutlineInputBorder(),
-        enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: _cor, width: 0.0)),
+        enabledBorder:
+            OutlineInputBorder(borderSide: BorderSide(color: _cor, width: 0.0)),
         prefixText: prefix,
         prefixStyle: TextStyle(color: _cor, fontSize: _fonte)),
     style: TextStyle(color: _cor, fontSize: _fonte),
